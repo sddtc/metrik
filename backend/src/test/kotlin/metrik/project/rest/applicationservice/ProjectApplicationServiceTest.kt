@@ -51,7 +51,7 @@ internal class ProjectApplicationServiceTest {
     private var expectedPipeline =
         PipelineConfiguration(
             pipelineId, projectId, pipelineName, pipelineUserName,
-            pipelineCredential, pipelineUrl, PipelineType.JENKINS
+            pipelineCredential, null, pipelineUrl, PipelineType.JENKINS
         )
 
     @Test

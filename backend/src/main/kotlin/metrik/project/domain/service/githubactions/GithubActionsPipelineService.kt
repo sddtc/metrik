@@ -15,6 +15,7 @@ import metrik.project.rest.vo.response.SyncProgress
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.net.URL
+import java.net.URI
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -31,6 +32,7 @@ class GithubActionsPipelineService(
     private val githubFeignClient: GithubFeignClient
 ) : PipelineService {
     private var logger = LoggerFactory.getLogger(javaClass.name)
+    private val githubBaseUrl = "https://api.github.com/repos"
 
     override fun verifyPipelineConfiguration(pipeline: PipelineConfiguration) {
         logger.info("Started verification for Github Actions pipeline [name: ${pipeline.name}, url: ${pipeline.url}, " +
@@ -38,7 +40,7 @@ class GithubActionsPipelineService(
 
         try {
             val (owner, repo) = getOwnerRepoFromUrl(pipeline.url)
-            githubFeignClient.retrieveMultipleRuns(pipeline.credential, owner, repo)
+            githubFeignClient.retrieveMultipleRuns(URI(pipeline.baseUrl ?: githubBaseUrl), pipeline.credential, owner, repo)
                 ?: throw PipelineConfigVerifyException("Verify failed")
         } catch (ex: FeignServerException) {
             throw PipelineConfigVerifyException("Verify website unavailable")

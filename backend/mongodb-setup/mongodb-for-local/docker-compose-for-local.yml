@@ -12,7 +12,7 @@ services:
       MONGO_REPLICA_SET_NAME: rs0
     volumes:
       - ../config/:/app/mongo/
-      - ./mongo-db-data/:/data/db/
+      - ./mongo-db-data/:/data/
     ports:
       - "27017:27017"
     restart: unless-stopped

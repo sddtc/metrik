@@ -1,5 +1,7 @@
 package metrik.project.domain.service.githubactions
 
+import feign.FeignException
+import feign.codec.DecodeException
 import metrik.infrastructure.utlils.toLocalDateTime
 import metrik.infrastructure.utlils.toTimestamp
 import metrik.project.domain.model.Commit
@@ -8,12 +10,14 @@ import metrik.project.infrastructure.github.feign.GithubFeignClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.net.URL
+import java.net.URI
 
 @Service
 class GithubCommitService(
     private val githubFeignClient: GithubFeignClient,
 ) {
     private var logger = LoggerFactory.getLogger(javaClass.name)
+    private val githubBaseUrl = "https://api.github.com/repos"
     private val defaultMaxPerPage = 100
 
     fun getCommitsBetweenTimePeriod(
@@ -29,7 +33,7 @@ class GithubCommitService(
         val allCommits = mutableSetOf<GithubCommit>()
         while (keepRetrieving) {
             val commitsFromGithub =
-                retrieveCommits(pipeline.credential, pipeline.url, startTimeStamp, endTimeStamp, branch, pageIndex)
+                retrieveCommits(pipeline.credential, pipeline.baseUrl, pipeline.url, startTimeStamp, endTimeStamp, branch, pageIndex)
 
             allCommits.addAll(commitsFromGithub)
 
@@ -49,6 +53,7 @@ class GithubCommitService(
 
     private fun retrieveCommits(
         credential: String,
+        baseUrl: String? = null,
         url: String,
         startTimeStamp: Long,
         endTimeStamp: Long,
@@ -63,16 +68,22 @@ class GithubCommitService(
         )
         val commits = with(githubFeignClient) {
             getOwnerRepoFromUrl(url).let { (owner, repo) ->
-                retrieveCommits(
-                    credential,
-                    owner,
-                    repo,
-                    if (startTimeStamp == 0L) null else startTimeStamp.toString(),
-                    endTimeStamp.toString(),
-                    branch,
-                    defaultMaxPerPage,
-                    pageIndex
-                )
+                try {
+                    retrieveCommits(
+                        URI(baseUrl ?: githubBaseUrl),
+                        credential,
+                        owner,
+                        repo,
+                        if (startTimeStamp == 0L) null else startTimeStamp.toString(),
+                        endTimeStamp.toString(),
+                        branch,
+                        defaultMaxPerPage,
+                        pageIndex
+                    )
+                } catch (ex: DecodeException) {
+                    println(ex.status())
+                    if (ex.status() == 404) null else throw ex
+                }
             }
         }
         return commits?.map { it.toGithubCommit() } ?: listOf()

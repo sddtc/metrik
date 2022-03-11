@@ -12,6 +12,7 @@ data class PipelineConfiguration(
     val name: String = Strings.EMPTY,
     var username: String? = null,
     var credential: String = Strings.EMPTY,
+    val baseUrl: String? = null,
     val url: String = Strings.EMPTY,
     var type: PipelineType = PipelineType.JENKINS,
 )

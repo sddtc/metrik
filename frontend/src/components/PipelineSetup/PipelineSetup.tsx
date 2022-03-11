@@ -1,6 +1,7 @@
 import {
 	BambooDeployedPipeline,
 	BambooPipeline,
+	GHEActions,
 	GithubActions,
 	JenkinsPipeline,
 	Pipeline,
@@ -20,12 +21,14 @@ const { Item, useForm } = Form;
 type JenkinsFormValues = Omit<JenkinsPipeline, "id">;
 type BambooFormValues = Omit<BambooPipeline, "id">;
 type GithubActionsFormValues = Omit<GithubActions, "id">;
+type GHEActionsFormValues = Omit<GHEActions, "id">;
 type BambooDeployedFormValues = Omit<BambooDeployedPipeline, "id">;
 
 export type FormValues =
 	| JenkinsFormValues
 	| BambooFormValues
 	| GithubActionsFormValues
+	| GHEActionsFormValues
 	| BambooDeployedFormValues;
 
 const groupTitleStyles = css({ fontWeight: "bold", display: "inline-block", marginBottom: 12 });
@@ -145,6 +148,7 @@ const PipelineSetup: FC<{
 										<Option value={PipelineTool.GITHUB_ACTIONS}>
 											{PipelineTool.GITHUB_ACTIONS}
 										</Option>
+										<Option value={PipelineTool.GHE_ACTIONS}>{PipelineTool.GHE_ACTIONS}</Option>
 									</Select>
 								</Item>
 							</Col>

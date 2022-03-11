@@ -18,6 +18,7 @@ class PipelineServiceFactory(
             PipelineType.JENKINS -> this.jenkinsPipelineService
             PipelineType.BAMBOO -> this.bambooPipelineService
             PipelineType.GITHUB_ACTIONS -> this.githubActionsPipelineService
+            PipelineType.GITHUB_ENTERPRISE_ACTIONS -> this.githubActionsPipelineService
             PipelineType.BAMBOO_DEPLOYMENT -> this.bambooDeploymentPipelineService
             else -> this.noopPipelineService
         }

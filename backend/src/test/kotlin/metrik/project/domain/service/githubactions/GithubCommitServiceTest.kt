@@ -26,8 +26,8 @@ internal class GithubCommitServiceTest {
     fun `should get all commits given since timestamp is not provided`() {
         every {
             githubFeignClient.retrieveCommits(
-                credential = any(), owner = any(), repo = any(), since = null, until = endTimeStamp.toString(),
-                branch = any(), perPage = any(), pageIndex = 1
+                baseUrl = any(), credential = any(), owner = any(), repo = any(), since = null,
+                until = endTimeStamp.toString(), branch = any(), perPage = any(), pageIndex = 1
             )
         } returns listOf(
             CommitResponse(
@@ -52,6 +52,7 @@ internal class GithubCommitServiceTest {
     fun `should get all commits in assigned branch`() {
         every {
             githubFeignClient.retrieveCommits(
+                baseUrl = any(),
                 credential = any(),
                 owner = any(),
                 repo = any(),
