@@ -5,10 +5,8 @@ plugins {
     application
     id("org.springframework.boot") version "2.4.1"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    id("io.gitlab.arturbosch.detekt").version("1.17.1")
     kotlin("jvm") version "1.4.31"
     kotlin("plugin.spring") version "1.4.31"
-    jacoco
 }
 
 group = "metrik-backend"
@@ -76,7 +74,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1")
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
-    
+
 
     configurations.compile {
         exclude("org.springframework.boot", "spring-boot-starter-logging")
@@ -126,61 +124,4 @@ val apiTest = task<Test>("apiTest") {
 
 tasks.check { dependsOn(apiTest) }
 
-detekt {
-    toolVersion = "1.17.1"
-    input = files(
-        "src/main/kotlin",
-        "src/test/kotlin",
-        "src/apiTest/kotlin"
-    )
-    config = files("gradle/detekt/detekt.yml")
-    buildUponDefaultConfig = true
-
-    reports {
-        xml.enabled = false
-        txt.enabled = false
-        html.enabled = true
-        html.destination = file("${buildDir}/reports/detekt/detekt.html")
-    }
-}
-
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    exclude("fourkeymetrics/Application.kt")
-    finalizedBy(tasks.check)
-}
-
-// ktlint tasks
-val outputDir = "${project.buildDir}/reports/ktlint/"
-val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
-
-val ktlintCheck = task<JavaExec>("ktlintCheck") {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Check Kotlin code style."
-    classpath = ktlintConfiguration
-    group = "verification"
-    main = "com.pinterest.ktlint.Main"
-    args = listOf("src/**/*.kt")
-}
-
-val ktlintFormat = task<JavaExec>("ktlintFormat") {
-    inputs.files(inputFiles)
-    outputs.dir(inputFiles)
-
-    description = "Fix Kotlin code style deviations."
-    classpath = ktlintConfiguration
-    group = "verification"
-    main = "com.pinterest.ktlint.Main"
-    args = listOf("-F", "src/**/*.kt")
-}
-// End of ktlint tasks
-
 apply(from = "gradle/git-hooks/install-git-hooks.gradle")
-apply(from = "gradle/jacoco/jacoco.gradle")
-
-tasks.jacocoTestReport {
-    reports {
-        csv.isEnabled = true
-    }
-}
