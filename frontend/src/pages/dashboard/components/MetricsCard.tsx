@@ -11,13 +11,17 @@ import Word from "../../../components/Word/Word";
 import { MetricsLevelConfig } from "./Fullscreen/components/FullscreenMetricsCard";
 import { Metrics, MetricsLevel, MetricsSummary } from "../../../models/metrics";
 
-const containerStyles = css({
-	backgroundColor: GRAY_1,
-	border: `1px solid ${GRAY_4}`,
-	padding: "32px 24px",
-	marginBottom: "24px",
-	height: "486px",
-});
+const containerStyles = css`
+	background-color: ${GRAY_1};
+	border: 1px solid ${GRAY_4};
+	padding: 32px 24px;
+	margin-bottom: 24px;
+	height: 486px;
+	
+	.recharts-responsive-container {
+	  overflow: hidden;
+	}
+`;
 const titleStyles = css({
 	marginBottom: "17px",
 });
