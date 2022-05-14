@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.net.URL
 import java.net.URI
+import java.time.Instant
+import java.time.ZonedDateTime
 
 @Service
 class GithubCommitService(
@@ -26,11 +28,26 @@ class GithubCommitService(
         branch: String? = null,
         pipeline: PipelineConfiguration
     ): List<Commit> {
-        logger.info("Started sync for Github Actions commits [${pipeline.url}]/[$branch]")
-
         var keepRetrieving = true
         var pageIndex = 1
         val allCommits = mutableSetOf<GithubCommit>()
+
+        logger.info("Started sync for Github Actions commits [${pipeline.url}]/[$branch]")
+        if(branch.equals("pdy-removeme") || branch===null) {
+            logger.info("Skip sync for Github Actions commits [${pipeline.url}]/[$branch]")
+            return emptyList()
+        }
+        val notFetch = endTimeStamp.toLocalDateTime().isBefore(ZonedDateTime.now().minusMonths(1).toLocalDateTime())
+        if (notFetch) {
+          logger.info(
+            "Skip Github Commits - " +
+                "Sending request to Github Feign Client with owner: ${pipeline.url}, " +
+                "since: ${startTimeStamp.toLocalDateTime()}, until: ${endTimeStamp.toLocalDateTime()}, " +
+                "branch: $branch, pageIndex: $pageIndex"
+          )
+          return emptyList()
+        }
+
         while (keepRetrieving) {
             val commitsFromGithub =
                 retrieveCommits(pipeline.credential, pipeline.baseUrl, pipeline.url, startTimeStamp, endTimeStamp, branch, pageIndex)
