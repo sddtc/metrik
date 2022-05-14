@@ -26,6 +26,9 @@ class GithubRunService(
         var keepRetrieving = true
         var pageIndex = 1
         while (keepRetrieving) {
+            if(pageIndex>10) {
+                break
+            }
             logger.info(
                 "Get Github Runs - " +
                     "Sending request to Github Feign Client with url: ${pipeline.url}, pageIndex: $pageIndex"

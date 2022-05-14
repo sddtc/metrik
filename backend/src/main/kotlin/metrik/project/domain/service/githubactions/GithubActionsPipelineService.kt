@@ -129,7 +129,7 @@ class GithubActionsPipelineService(
     ): Map<String, Map<GithubActionsRun, List<Commit>>> {
         val branchCommitsMap: MutableMap<String, Map<GithubActionsRun, List<Commit>>> = mutableMapOf()
         runs.groupBy { it.branch }
-            .forEach { (branch, run) -> branchCommitsMap[branch] = mapRunToCommits(pipeline, run) }
+            .forEach { (branch, run) -> branchCommitsMap[branch?:"unknown"] = mapRunToCommits(pipeline, run) }
         return branchCommitsMap.toMap()
     }
 

@@ -27,7 +27,7 @@ interface GithubFeignClient {
         @PathVariable("owner") owner: String,
         @PathVariable("repo") repo: String,
         @RequestParam("per_page", required = false) perPage: Int? = null,
-        @RequestParam("page", required = false) pageIndex: Int? = null
+        @RequestParam("page", required = false) pageIndex: Any? = null
     ): MultipleRunResponse?
 
     @GetMapping("/{owner}/{repo}/actions/runs/{runId}")
